@@ -1,42 +1,49 @@
 #!/usr/bin/python3
+"""
+Python script that, use a REST API .
+"""
 
-"""
-This module gather data from an API.
-"""
 import requests
 import sys
 
 
-def get_employee_todo_progress(employee_id):
-    base_url = "https://jsonplaceholder.typicode.com/users"
-    todo_url = f"{base_url}/{employee_id}/todos"
+def get_employee_todo_list(employee_id):
+    """
+    function that fetch ressources from an endpoint
+    """
+    base_url = "https://jsonplaceholder.typicode.com"
 
-    # Fetch TODO list for the given employee
-    response = requests.get(todo_url)
-    todos = response.json()
+    # Get user information
+    user_response = requests.get(f"{base_url}/users/{employee_id}")
+    user_data = user_response.json()
+    employee_name = user_data['name']
 
-    # Fetch employee details
-    employee_response = requests.get(f"{base_url}/{employee_id}")
-    employee = employee_response.json()
+    # Get user's TODO list
+    todo_response = requests.get(f"{base_url}/todos?userId={employee_id}")
+    todo_data = todo_response.json()
 
-    # Calculate progress
-    total_tasks = len(todos)
-    completed_tasks = sum(1 for todo in todos if todo['completed'])
+    # Calculate the number of completed tasks
+    completed_tasks = [task for task in todo_data if task['completed']]
+    number_of_done_tasks = len(completed_tasks)
+    total_number_of_tasks = len(todo_data)
 
-    # Display progress
-    print(f"Employee {employee['name']} is done with tasks"
-          f"({completed_tasks}/{total_tasks}):")
+    # Construct the result string
+    result_string = (
+        f"Employee {employee_name} is done with tasks"
+        f"({number_of_done_tasks}/{total_number_of_tasks}):\n"
+    )
 
-    # Display completed tasks
-    for todo in todos:
-        if todo['completed']:
-            print(f"\t{todo['title']}")
+    for task in completed_tasks:
+        result_string += f"\t{task['title']}\n"
+
+    return result_string
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
+        print("Usage: python script_name.py <employee_id>")
         sys.exit(1)
 
     employee_id = int(sys.argv[1])
-    get_employee_todo_progress(employee_id)
+    result = get_employee_todo_list(employee_id)
+    sys.stdout.write(result)
