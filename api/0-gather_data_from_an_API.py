@@ -1,18 +1,18 @@
 #!/usr/bin/python3
-"""Python script that, use a REST API,
+"""Write a Python script that, using this REST API,
 for a given employee ID, returns information about
 his/her TODO list progress."""
 import requests
 from sys import argv
 if __name__ == "__main__":
     employee_id = argv[1]
-    req_user_name = requests.get(
-        f"https://jsonplaceholder.typicode.com/users/{employee_id}")
-    req_name = req_user_name.json()
+    req_name = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id))
+    req_name = req_name.json()
     name = req_name["name"]
     req_todo = requests.get(
-        f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
-            )
+        "https://jsonplaceholder.typicode.com/users/{}/todos".format(
+            employee_id))
     req_todo = req_todo.json()
     completed_tasks = 0
     for i in req_todo:
