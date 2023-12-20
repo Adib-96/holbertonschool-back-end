@@ -1,50 +1,26 @@
 #!/usr/bin/python3
-"""
-Python script that, use a REST API .
-"""
-
+"""Python script that, use a REST API,
+for a given employee ID, returns information about
+his/her TODO list progress."""
 import requests
-import sys
-
-
-def get_employee_todo_list(employee_id):
-    """
-    function that fetch ressources from an endpoint
-    """
-    base_url = "https://jsonplaceholder.typicode.com"
-
-    # Get user information
-    user_response = requests.get(f"{base_url}/users/{employee_id}")
-    user_data = user_response.json()
-    employee_name = user_data.get("name")
-    print(employee_name)
-
-    # Get user's TODO list
-    todo_response = requests.get(f"{base_url}/todos?userId={employee_id}")
-    todo_data = todo_response.json()
-
-    # Calculate the number of completed tasks
-    completed_tasks = [task for task in todo_data if task['completed']]
-    number_of_done_tasks = len(completed_tasks)
-    total_number_of_tasks = len(todo_data)
-
-    # Construct the result string
-    result_string = (
-        f"Employee {employee_name} is done with tasks"
-        f"({number_of_done_tasks}/{total_number_of_tasks}):\n"
-    )
-
-    for task in completed_tasks:
-        result_string += f"\t{task['title']}\n"
-
-    return result_string
-
-
+from sys import argv
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script_name.py <employee_id>")
-        sys.exit(1)
-
-    employee_id = int(sys.argv[1])
-    result = get_employee_todo_list(employee_id)
-    sys.stdout.write(result)
+    employee_id = argv[1]
+    req_user_name = requests.get(
+        f"https://jsonplaceholder.typicode.com/users/{employee_id}")
+    req_name = req_user_name.json()
+    name = req_name["name"]
+    req_todo = requests.get(
+        f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+            )
+    req_todo = req_todo.json()
+    completed_tasks = 0
+    for i in req_todo:
+        if i["completed"]:
+            completed_tasks += 1
+    print("Employee {} is done with tasks({}/{}):".format(name,
+                                                          completed_tasks,
+                                                          len(req_todo)))
+    for i in req_todo:
+        if i["completed"]:
+            print("\t {}".format(i["title"]))
