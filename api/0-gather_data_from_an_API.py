@@ -16,7 +16,8 @@ def get_employee_todo_list(employee_id):
     # Get user information
     user_response = requests.get(f"{base_url}/users/{employee_id}")
     user_data = user_response.json()
-    employee_name = user_data['name']
+    employee_name = user_data.get("name")
+    print(employee_name)
 
     # Get user's TODO list
     todo_response = requests.get(f"{base_url}/todos?userId={employee_id}")
