@@ -33,4 +33,5 @@ def exportJson():
         js_f.write(format_ready_for_json)
 
 
-exportJson()
+if __name__ == "__main__":
+    exportJson()
