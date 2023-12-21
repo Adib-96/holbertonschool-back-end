@@ -1,16 +1,10 @@
 #!/usr/bin/python3
-"""
-Python script to export data in the JSON format.
-"""
-from sys import argv
-import json
+"""Using what you did in the task #0,
+extend your Python script to export data in the JSON format."""
 import requests
-
-
-def exportJson():
-    """
-    function that use an api to format datas
-    """
+from sys import argv
+from json import dump
+if __name__ == "__main__":
     employee_id = argv[1]
     req_employee = requests.get(
         "https://jsonplaceholder.typicode.com/users/{}".format(employee_id))
@@ -22,18 +16,13 @@ def exportJson():
     req_todo = req_todo.json()
     filename = "{}.json".format(employee_id)
     nested_dic = {}
-    my_list = []
-    
+    ls = []
     for i in req_todo:
         dict = {
             "task": i["title"],
             "completed": i["completed"],
             "username": username}
-        my_list.append(dict)
-    nested_dic[employee_id] = my_list
+        ls.append(dict)
+    nested_dic[employee_id] = ls
     with open(filename, "w") as f:
-        json.dump(nested_dic, f)
-
-
-if __name__ == "__main__":
-    exportJson()
+        dump(nested_dic, f)
