@@ -1,35 +1,32 @@
 #!/usr/bin/python3
-"""Using what you did in the task #0,
-extend your Python script to export data in the JSON format."""
+"""Python script to export data in the JSON format."""
+
+import json
 import requests
 from sys import argv
-from json import dump
 
-if __name__ == "__main__":
-    if len(argv) != 2:
-        print("Usage: {} <employee_id>".format(argv[0]))
-        exit(1)
 
-    employee_id = argv[1]
-    try:
-        req_employee = requests.get(
-            f"https://jsonplaceholder.typicode.com/users/{employee_id}")
-        req_employee.raise_for_status()
+if __name__ == '__main__':
+    main_url = 'https://jsonplaceholder.typicode.com'
+    users_url = main_url + "/users"
+    todos_url = main_url + "/todos"
 
-        req_todo = requests.get(
-            f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos")
-        req_todo.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
-        exit(1)
+    users_result = requests.get(users_url).json()
+    todos_result = requests.get(todos_url).json()
 
-    username = req_employee.json()["username"]
-    todos = req_todo.json()
+    json_dic = {}
+    json_list = []
 
-    filename = f"{employee_id}.json"
-    data = {employee_id: [{"task": todo["title"],
-                           "completed": todo["completed"],
-                           "username": username} for todo in todos]}
-
-    with open(filename, "w") as f:
-        dump(data, f, indent=2)
+    for user in users_result:
+        if user['id'] == int(argv[1]):
+            user_name = user['username']
+    for todo in todos_result:
+        if todo['userId'] == int(argv[1]):
+            internal_dict = {}
+            internal_dict["task"] = todo['title']
+            internal_dict["completed"] = todo['completed']
+            internal_dict["username"] = user_name
+            json_list.append(internal_dict)
+    json_dic[argv[1]] = json_list
+    with open(f"{argv[1]}.json", 'w') as json_file:
+        json.dump(json_dic, json_file)
